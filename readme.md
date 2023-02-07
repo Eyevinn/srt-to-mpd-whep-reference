@@ -1,15 +1,17 @@
-# FFMPEG -> [SRT-GATEWAY] -> [WHIP-WHEP] -> [MPD-WHEP]
+# SRT to MPD-WHEP Reference implementation
+
+![](./assets/diagram.png)
 
 ## Requirements
-`ffmpeg`
-`docker`
-`serve`
+- ffmpeg
+- docker
+- Simple web server eg. [serve](https://www.npmjs.com/package/serve)
 
 ### Setup
 
 **Start the WHIP-WHEP docker containers**
 
-`curl -SL https://github.com/Eyevinn/whip-whep/releases/download/v0.2.0/docker-compose.yml | docker-compose -f - up -d`
+`curl -SL https://raw.githubusercontent.com/Eyevinn/whip-whep/main/docker-compose.yml | docker-compose -f - up -d`
 
 **Start the SRT-GATEWAY docker container** 
 
@@ -36,7 +38,11 @@ The SRT Gateway is now available on `http://localhost:3000`
 
 And then use the following WHIP URL in the transmitter: `http://ingest:8200/api/v2/whip/sfu-broadcaster?channelId=test`
 
+`ingest` is the alias used in the docker network for the ingest container
+
 **Start the MPD ffmpeg instance**
+
+TODO: change to shaka-packager
 
 Start FFMPEG with an an input of SRT in listener mode
 
@@ -49,6 +55,8 @@ serve the dash manifest and segments on `localhost:1234`
 **Create the transmitter**
 
 To manage your transmitter you can either use the UI `http://localhost:3000/ui` or the API `http://localhost:3000/api/v1/tx`, we're going to use the [API](http://localhost:3000/api/docs/):
+
+*There is a POSTMAN collection [here](https://github.com/Eyevinn/srt-whip-gateway/blob/main/docs/SRT-GATEWAY.postman_collection.json)*
 
 First create a transmitter
 
@@ -73,14 +81,12 @@ Then start the transmitter
 }
 ```
 
-**Ingest**
-
-TODO: Change to use an RTSP stream as input
+**Ingest RTSP**
 
 Now we can start ingesting with ffmpeg
   
 ```
-ffmpeg -re -i <file.mp4> -c copy -f mpegts "srt://localhost:9995"
+ffmpeg -re -i "rtsp://<username>:<password>@<rtsp-address>" -f mpegts "srt://localhost:9995"
 ```
 
 You should now have a working WebRTC stream available through WHEP at `http://localhost:8300/whep/channel/srt`
