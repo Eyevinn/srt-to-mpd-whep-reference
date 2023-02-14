@@ -107,3 +107,10 @@ Run the MPD-WHEP Docker container with the MPD & WHEP env variables set to your 
 You now have a MPD with both normal segments and WebRTC 🙌
 
 `http://localhost:8000/manifest.mpd`
+
+
+**Play the DASH stream**
+
+WebRTC in dash is still in early stages and as such there are no players that supports it, you can however use an experimental branch of dash.js, `feature/webrtc`, available [here](https://github.com/Dash-Industry-Forum/dash.js/tree/feature/webrtc).
+
+Once you've setuped everything you'll be able to play the stream on `http://localhost:3000/samples/dash-if-reference-player/index.html?mpd=http://localhost:8000/manifest.mpd`. Use the quality switcher to switch between dash & webrtc.
