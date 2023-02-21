@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   shaka:
-    image: google/shaka-packager
+    image: google/shaka-packager:v2.5.1
     depends_on:
       - srtrecv
     command: [ 
