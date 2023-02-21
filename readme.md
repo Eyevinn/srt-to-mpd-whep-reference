@@ -30,8 +30,8 @@ In this case they are running on the docker network called `whip-whep_default`
 
 Start the SRT WHIP Gateway on this network:
 
-```
-docker run --network whip-whep_default -p 3000:3000 -p 9000-9999:9000-9999/udp eyevinntechnology/srt-whip
+```sh
+docker run --network whip-whep_default -p 3000:3000 -p 9000-9999:9000-9999/udp -d eyevinntechnology/srt-whip
 ```
 
 The SRT Gateway is now available on `http://localhost:3000`
@@ -44,9 +44,10 @@ You will have to use the following WHIP URL when setting up the transmitter: `ht
 
 Start srt-live-transmit in listener mode and output udp, this is to be able to pipe it to shaka-packager
 
-`srt-live-transmit srt://4141/?mode=listener udp://:1234`
+`srt-live-transmit "srt://4141/?mode=listener" "udp://:1234"`
 
-Start shaka-packager
+Start shaka-packager with the above UDP address as input, the following script will create the DASH manifest and segments in 
+a folder called dash so make sure you've created that folder `mkdir dash`.
 
 ```sh
 packager \
@@ -55,7 +56,7 @@ packager \
   --mpd_output dash/manifest.mpd
 ```
 
-serve the dash manifest and segments on `localhost:5000`
+Serve the dash manifest and segments on `localhost:5000` using `serve` ( or any other http server )
 
 `serve dash --cors -l 5000`
 
@@ -73,7 +74,7 @@ First create a transmitter
 {
     "port": 9995,
     "whipUrl": "http://ingest:8200/api/v2/whip/sfu-broadcaster?channelId=srt", // ingest:8200 referes to the WHIP docker container
-    "passThroughUrl": "srt://<local-ip>:4141", // PassThrough to the ffmpeg instance that will produce the MPEG-DASH manifest
+    "passThroughUrl": "srt://<local-ip>:4141", // PassThrough to the shaka-packager instance that will produce the MPEG-DASH manifest
     "status": "idle"
 }
 ```
@@ -102,7 +103,9 @@ You should now have a working WebRTC stream available through WHEP at `http://lo
 
 Run the MPD-WHEP Docker container with the MPD & WHEP env variables set to your WHEP and MPD sources.
 
-`docker run -e MPD=http://<local-ip>:5000/live.mpd -e WHEP=http://localhost:8300/whep/channel/srt -p 8000:8000 -d mpd-whep`
+```sh
+docker run -e MPD=http://<local-ip>:5000/manifest.mpd -e WHEP=http://localhost:8300/whep/channel/srt -p 8000:8000 -d eyevinntechnology/mpd-whep
+```
 
 You now have a MPD with both normal segments and WebRTC 🙌
 
