@@ -32,7 +32,7 @@ curl -X 'POST' \
   -d '{
     "port": 9995,
     "whipUrl": "http://ingest:8200/api/v2/whip/sfu-broadcaster?channelId=srt",
-    "passThroughUrl": "srt://shaka:4141",
+    "passThroughUrl": "srt://srtrecv:4141",
     "status": "idle"
 }'
 ```
