@@ -7,7 +7,7 @@
 
 ### Setup
 
-**Quickstart**
+**Start containers**
 
 ```sh
 docker-compose -p mpd-whep up
