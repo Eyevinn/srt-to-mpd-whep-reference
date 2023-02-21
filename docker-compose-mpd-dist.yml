@@ -7,15 +7,15 @@ services:
       - srtrecv
     command: [ 
       "packager", 
-      "in=udp://127.0.0.1:1234,stream=audio,init_segment=/dash/shaka_audio.mp4,segment_template=/dash/shaka_audio_$$Number$$.m4s",
-      "in=udp://127.0.0.1:1234,stream=video,init_segment=/dash/shaka_video.mp4,segment_template=/dash/shaka_video_$$Number$$.m4s", 
+      "in=udp://0.0.0.0:1234,stream=audio,init_segment=/dash/shaka_audio.mp4,segment_template=/dash/shaka_audio_$$Number$$.m4s",
+      "in=udp://0.0.0.0:1234,stream=video,init_segment=/dash/shaka_video.mp4,segment_template=/dash/shaka_video_$$Number$$.m4s", 
       "--mpd_output", "/dash/manifest.mpd" 
     ]
     volumes:
       - media:/dash
   srtrecv:
     image: howlowck/srt
-    command: [ "./srt-live-transmit", "srt://:4141/?mode=listener", "udp://:1234" ]
+    command: [ "./srt-live-transmit", "srt://:4141/?mode=listener", "udp://shaka:1234" ]
   webserver:
     image: ghcr.io/patrickdappollonio/docker-http-server:v2
     depends_on:
