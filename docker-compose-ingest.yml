@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  srtwhip:
+    image: eyevinntechnology/srt-whip:latest
+    ports:
+      - "3000:3000"
+      - "9000-9999:9000-9999/udp"
+
+networks:
+  default:
+    name: mpd-whep-network
+    external: true

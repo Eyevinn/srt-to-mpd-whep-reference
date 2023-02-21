@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  shaka:
+    image: google/shaka-packager
+    depends_on:
+      - srtrecv
+    command: [ 
+      "packager", 
+      "in=udp://127.0.0.1:1234,stream=audio,init_segment=/dash/shaka_audio.mp4,segment_template=/dash/shaka_audio_$$Number$$.m4s",
+      "in=udp://127.0.0.1:1234,stream=video,init_segment=/dash/shaka_video.mp4,segment_template=/dash/shaka_video_$$Number$$.m4s", 
+      "--mpd_output", "/dash/manifest.mpd" 
+    ]
+    volumes:
+      - media:/dash
+  srtrecv:
+    image: howlowck/srt
+    command: [ "./srt-live-transmit", "srt://:4141/?mode=listener", "udp://:1234" ]
+  webserver:
+    image: ghcr.io/patrickdappollonio/docker-http-server:v2
+    depends_on:
+      - shaka
+    command: [ "http-server", "-d", "/dash", "--cors" ]
+    ports:
+      - "8080:5000/tcp"
+    volumes:
+      - media:/dash
+
+volumes:
+  media:
+
+networks:
+  default:
+    name: mpd-whep-network
+    external: true
