@@ -1,6 +1,44 @@
 version: "3.7"
 
 services:
+  srtwhip:
+    image: eyevinntechnology/srt-whip:v0.2.3
+    ports:
+      - "3000:3000"
+      - "9000-9999:9000-9999/udp"
+  shaka:
+    image: google/shaka-packager:v2.5.1
+    command: [ 
+      "packager", 
+      "in=udp://0.0.0.0:1234,stream=audio,init_segment=/dash/shaka_audio.mp4,segment_template=/dash/shaka_audio_$$Number$$.m4s",
+      "in=udp://0.0.0.0:1234,stream=video,init_segment=/dash/shaka_video.mp4,segment_template=/dash/shaka_video_$$Number$$.m4s", 
+      "--mpd_output", "/dash/manifest.mpd" 
+    ]
+    volumes:
+      - media:/dash
+  srtrecv:
+    depends_on:
+      - shaka
+    image: howlowck/srt
+    command: [ "./srt-live-transmit", "srt://:4141/?mode=listener", "udp://shaka:1234" ]
+  webserver:
+    image: ghcr.io/patrickdappollonio/docker-http-server:v2
+    depends_on:
+      - shaka
+    command: [ "http-server", "-d", "/dash", "--cors" ]
+    ports:
+      - "8080:5000/tcp"
+    volumes:
+      - media:/dash
+  mpdwhep:
+    depends_on:
+      - webserver
+    image: eyevinntechnology/mpd-whep
+    environment:
+      - MPD=http://webserver:8080/manifest.mpd
+      - WHEP=http://localhost:8300/channel/srt
+    ports:
+      - "8000:8000/tcp"
   sfu:
     image: eyevinntechnology/wrtc-sfu:v0.4.0
     cap_add:
@@ -63,8 +101,6 @@ services:
       - SMB_API_KEY=example
     ports:
       - "8300:8300/tcp"
-      
-networks:
-  default:
-    name: mpd-whep-network
-    external: true
+
+volumes:
+  media:

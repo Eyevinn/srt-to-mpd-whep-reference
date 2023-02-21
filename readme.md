@@ -117,3 +117,26 @@ You now have a MPD with both normal segments and WebRTC 🙌
 WebRTC in dash is still in early stages and as such there are no players that supports it, you can however use an experimental branch of dash.js, `feature/webrtc`, available [here](https://github.com/Dash-Industry-Forum/dash.js/tree/feature/webrtc).
 
 Once you've setuped everything you'll be able to play the stream on `http://localhost:3000/samples/dash-if-reference-player/index.html?mpd=http://localhost:8000/manifest.mpd`. Use the quality switcher to switch between dash & webrtc.
+
+**Docker Compose**
+
+For convience there is a docker-compose file that spins up all containers:
+
+```
+docker-compose -p mpd-whep up
+```
+
+Create a transmitter using the SRT WHIP gw API:
+
+```
+curl -X 'POST' \
+  'http://localhost:3000/api/v1/tx' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "port": 9995,
+    "whipUrl": "http://ingest:8200/api/v2/whip/sfu-broadcaster?channelId=srt",
+    "passThroughUrl": "srt://srtrecv:4141",
+    "status": "idle"
+}'
+```
