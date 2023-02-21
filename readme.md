@@ -54,12 +54,6 @@ You should now have a working WebRTC stream available through WHEP at `http://lo
 
 **Egress**
 
-Run the MPD-WHEP Docker container with the MPD & WHEP env variables set to your WHEP and MPD sources.
-
-```sh
-docker run -e MPD=http://<local-ip>:5000/manifest.mpd -e WHEP=http://localhost:8300/whep/channel/srt -p 8000:8000 -d eyevinntechnology/mpd-whep
-```
-
 The `eyevinntechnology/mpd-whep` container now running provides you with an MPD with both normal segments and WebRTC 🙌
 
 `http://localhost:8000/manifest.mpd`
