@@ -35,7 +35,7 @@ services:
       - webserver
     image: eyevinntechnology/mpd-whep
     environment:
-      - MPD=http://webserver:8080/manifest.mpd
+      - MPD=http://webserver:5000/manifest.mpd
       - WHEP=http://localhost:8300/channel/srt
     ports:
       - "8000:8000/tcp"
