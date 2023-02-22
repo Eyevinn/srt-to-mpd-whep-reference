@@ -12,7 +12,8 @@ services:
       "packager", 
       "in=udp://0.0.0.0:1234,stream=audio,init_segment=/dash/shaka_audio.mp4,segment_template=/dash/shaka_audio_$$Number$$.m4s",
       "in=udp://0.0.0.0:1234,stream=video,init_segment=/dash/shaka_video.mp4,segment_template=/dash/shaka_video_$$Number$$.m4s", 
-      "--mpd_output", "/dash/manifest.mpd" 
+      "--mpd_output", "/dash/manifest.mpd",
+      "--base_urls", "http://localhost:8080/"
     ]
     volumes:
       - media:/dash
@@ -36,7 +37,7 @@ services:
     image: eyevinntechnology/mpd-whep
     environment:
       - MPD=http://webserver:5000/manifest.mpd
-      - WHEP=http://localhost:8300/channel/srt
+      - WHEP=http://localhost:8300/whep/channel/srt
     ports:
       - "8000:8000/tcp"
   sfu:
